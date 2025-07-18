@@ -1,0 +1,141 @@
+{
+  "name": "Emaile Rapor Gönderme",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "584d2d2a-72e6-4e14-87b1-a7bdad1888dc",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1S9oXpl4hd0Np76znssgzIYTFzA4PHKtAkzERoPMR-SE",
+          "mode": "list",
+          "cachedResultName": "Linke Tıklanma Log Kayıtları",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1S9oXpl4hd0Np76znssgzIYTFzA4PHKtAkzERoPMR-SE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sayfa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1S9oXpl4hd0Np76znssgzIYTFzA4PHKtAkzERoPMR-SE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        220,
+        0
+      ],
+      "id": "029147b3-007d-4419-96e5-38b6af6a6546",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "izP7qp7f31YDuRmV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// Segment bazlı toplam tıklama için tanım\nconst segmentClicks = {};\n\n// Kampanya + kacıncı_email bazlı detaylı istatistik\nconst emailStats = {};\n\nfor (const item of items) {\n  const campaign = item.json.campaign || 'Bilinmeyen Kampanya';\n  const emailNo = item.json.kacıncı_email || 'Bilinmeyen Email No';\n\n  // Toplam segment tıklaması\n  if (!segmentClicks[campaign]) {\n    segmentClicks[campaign] = 0;\n  }\n  segmentClicks[campaign]++;\n\n  // Email No bazlı detaylı istatistik\n  if (!emailStats[campaign]) {\n    emailStats[campaign] = {};\n  }\n  if (!emailStats[campaign][emailNo]) {\n    emailStats[campaign][emailNo] = 0;\n  }\n  emailStats[campaign][emailNo]++;\n}\n\n// HTML oluştur\nlet html = `\n  <h2>📊 Email Tıklama Raporu</h2>\n  <p>Toplam kampanya ve gönderilen email tıklamaları aşağıda listelenmiştir.</p>\n\n  <h3 style=\"margin-top: 20px;\">🔗 Kampanya & Gönderilen Email Bazlı Detay</h3>\n  <table border=\"1\" cellpadding=\"6\" cellspacing=\"0\" style=\"border-collapse: collapse; margin-bottom: 30px;\">\n    <thead style=\"background-color: #f2f2f2;\">\n      <tr>\n        <th>Kampanya</th>\n        <th>Kaçıncı Email Gönderildi?</th>\n        <th>Tıklama Sayısı</th>\n      </tr>\n    </thead>\n    <tbody>\n`;\n\nfor (const campaign in emailStats) {\n  for (const emailNo in emailStats[campaign]) {\n    html += `\n      <tr>\n        <td>${campaign}</td>\n        <td>${emailNo}</td>\n        <td>${emailStats[campaign][emailNo]}</td>\n      </tr>\n    `;\n  }\n}\n\nhtml += `\n    </tbody>\n  </table>\n\n  <h3 style=\"margin-top: 20px;\">📌 Segment Bazlı Toplam Tıklama</h3>\n  <table border=\"1\" cellpadding=\"6\" cellspacing=\"0\" style=\"border-collapse: collapse;\">\n    <thead style=\"background-color: #f9f9f9;\">\n      <tr>\n        <th>Segment</th>\n        <th>Segment Başına Toplam Tıklanma</th>\n      </tr>\n    </thead>\n    <tbody>\n`;\n\nfor (const segment in segmentClicks) {\n  html += `\n    <tr>\n      <td>${segment}</td>\n      <td>${segmentClicks[segment]}</td>\n    </tr>\n  `;\n}\n\nhtml += `\n    </tbody>\n  </table>\n\n  <p style=\"margin-top: 20px; font-style: italic;\">Hazırlayan: n8n Otomasyon Sistemi</p>\n`;\n\nreturn [{ json: { html } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "1fe26f1f-f572-4c8c-8b95-11327dc2f9df",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "ozenhuseyinberat15@gmail.com",
+        "subject": "📈 Haftalık Email Performans Raporu",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <h2 style=\"color: #2E86C1;\">📊 Haftalık Email Performans Özeti</h2>\n\n    <p>Merhaba,</p>\n\n    <p>\n      <strong>{{ $now.minus({ days: 7 }).toFormat('dd.MM.yyyy') }}</strong> -\n      <strong>{{ $now.toFormat('dd.MM.yyyy') }}</strong> tarihleri arasındaki\n      email tıklama verileri aşağıdaki tabloda özetlenmiştir:\n    </p>\n\n    <hr>\n\n    {{ $json[\"html\"] }}\n\n    <hr>\n\n    <p>📌 Bu veriler, kullanıcıların hangi mesajlara daha çok ilgi gösterdiğini\n    analiz etmenize yardımcı olabilir.</p>\n\n    <p style=\"font-size: 14px; color: #888;\">\n      Rapor oluşturulma zamanı: {{ $now.toFormat('dd.MM.yyyy HH:mm') }}\n    </p>\n\n    <p>Sevgiler,<br><strong>Otomasyon Sisteminiz 🤖</strong></p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        660,
+        0
+      ],
+      "id": "619864e1-7d0e-4362-8002-ec79cab499f5",
+      "name": "Send a message",
+      "webhookId": "81d2b920-af39-44e8-b42c-23d31fad3880",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "46287868-28d2-4b35-aa62-f0bd45e7eaf7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f0975136b9e27ed96582e7766048a49bf45bf914fd93bb2a32b49bf4a4e21b5"
+  },
+  "id": "xSRz326kYPy1SFMJ",
+  "tags": []
+}
