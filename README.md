@@ -12,7 +12,7 @@ Basic email automation and engagement tracking system using n8n + Google Sheets 
 ## File Structure
 
 - `workflows/`: n8n JSON workflow files
-- `docs/`: Project documentation (in Markdown format)
+- `docs/`: Project documentation (in Markdown and Docx format)
 - `screenshots/`: Visual examples of the system
 
 ## Usage
