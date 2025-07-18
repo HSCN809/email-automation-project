@@ -1,0 +1,934 @@
+{
+  "name": "Fetch Customer List",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b619c82a-ae8c-4592-ab51-428b3818a2d7",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1wBN_7OXkyKbzXfkP_r0quwWWsYDRpajOAzeEd7LNSMQ",
+          "mode": "list",
+          "cachedResultName": "PotentialCustomers",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wBN_7OXkyKbzXfkP_r0quwWWsYDRpajOAzeEd7LNSMQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sayfa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wBN_7OXkyKbzXfkP_r0quwWWsYDRpajOAzeEd7LNSMQ/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        220,
+        0
+      ],
+      "id": "99a8cbc2-b55e-40c2-b794-a2a38bf5ba7c",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "izP7qp7f31YDuRmV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.Segment }}",
+                    "rightValue": "Deneme Aldı Ama Satın Almadı",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "06337356-81bd-48f8-b644-0fa91ee6d3ac"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Deneme Aldı Ama Satın Almadı"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d493ce1f-4f32-49b8-8399-5feddf78739c",
+                    "leftValue": "={{ $json.Segment }}",
+                    "rightValue": "Form Doldurdu, Deneme Almadı",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Form Doldurdu, Deneme Almadı"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "628ecba5-41fc-4f4d-bb11-81747f9ed10d",
+                    "leftValue": "={{ $json.Segment }}",
+                    "rightValue": "Denemeye Katıldı, İlgi Gösterdi",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Denemeye Katıldı, İlgi Gösterdi"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "379bb95a-77b9-4626-ad52-81e54789a5e8",
+                    "leftValue": "={{ $json.Segment }}",
+                    "rightValue": "Hiç Etkileşim Yok",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Hiç Etkileşim Yok"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "544d349a-f871-45b6-9d7f-cbc510f0286e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Deneme dersiniz nasıldı? Şimdi kayıt zamanı 🎓",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <p>Merhaba <strong>{{$json[\"Name\"]}}</strong>,</p>\n\n    <p>Geçtiğimiz günlerde eğitmenimizle ilk deneme dersinize katıldınız. Umarız keyif almışsınızdır!</p>\n\n    <p>🧠 Öğrenme yolculuğunuzda bir adım daha atmaya ne dersiniz?</p>\n\n    <p><strong>Sadece bu haftaya özel, kaydınızı şimdi tamamlarsanız %10 indirim fırsatını kaçırmazsınız!</strong></p>\n\n    <p>💬 Detayları konuşmak ya da kayıt süreciyle ilgili sorularınızı yanıtlamak için buradayız.</p>\n\n    <p>\n      <a href=\"https://hsbrn8n12.app.n8n.cloud/webhook/track-open?email={{ $json.Email }}&campaign={{ $json.Segment }}&kacıncı_email=1. Email\"\n         style=\"background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;\">\n         %10 İndirimle Hemen Kayıt Ol\n      </a>\n    </p>\n\n    <p>İlk adımı attınız, şimdi sırada başarı dolu bir yolculuk var 🚀</p>\n\n    <p>Sevgiler,<br>Eğitim Ekibiniz</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        760,
+        -180
+      ],
+      "id": "c54939da-b035-441a-b508-d4004935d346",
+      "name": "Send a message",
+      "webhookId": "e7f28a72-3fa0-49cc-9a7a-a2df9ae49c3b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Ücretsiz deneme dersinizi planladınız mı? 🎯",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <p>Merhaba <strong>{{$json[\"Name\"]}}</strong>,</p>\n\n    <p>Formunuzu başarıyla aldık, teşekkür ederiz 🙌</p>\n\n    <p>Sizi daha yakından tanımak ve ihtiyacınıza en uygun eğitimi sunmak için bir <strong>ücretsiz deneme dersi</strong> planlamak isteriz.</p>\n\n    <p>📅 Uygun olduğunuz zamanı seçerek sadece 1 tıklamayla görüşmeyi planlayabilirsiniz.</p>\n\n    <p><strong>Kontenjanlar hızla doluyor, fırsatı kaçırmayın!</strong></p>\n\n    <p>\n      👉\n      <a href=\"https://hsbrn8n12.app.n8n.cloud/webhook/track-open?email={{ $json.Email }}&campaign={{ $json.Segment }}&kacıncı_email=1. Email\"\n         style=\"background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;\">\n         Deneme Dersi Planla\n      </a>\n    </p>\n\n    <p>Sevgiler,<br>\n    Eğitim Ekibiniz</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        760,
+        -20
+      ],
+      "id": "8cef0f8d-d3e1-4895-b2f2-9c9f28cf49d9",
+      "name": "Send a message1",
+      "webhookId": "6b74a328-036e-4072-b4f6-d84b0579e84f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Sizi Aramızda Görmek İsteriz 🎯",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <p>Merhaba <strong>{{$json[\"Name\"]}}</strong>,</p>\n\n    <p>Deneme dersimizdeki ilginiz ve geri bildiriminiz bizi çok mutlu etti.</p>\n\n    <p>Bu uyumu sürdürebilmek için sizi artık programımıza dahil etmek istiyoruz.</p>\n\n    <p><strong>Sadece bugün kaydolanlara özel: +1 hediye seans 🎁</strong></p>\n\n    <p>Size özel yerimizi ayırmak için bizimle hemen iletişime geçebilirsiniz.</p>\n\n    <p>\n      <a href=\"https://hsbrn8n12.app.n8n.cloud/webhook/track-open?email={{ $json.Email }}&campaign={{ $json.Segment }}&kacıncı_email=1. Email\"\n         style=\"background-color: #ff6600; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;\">\n         Hemen Kaydol\n      </a>\n    </p>\n\n    <p>Sevgiler,<br>\n    Eğitim Ekibi</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        760,
+        140
+      ],
+      "id": "85c9f0cc-609f-462a-8912-b6dc56b3a3f9",
+      "name": "Send a message2",
+      "webhookId": "6b74a328-036e-4072-b4f6-d84b0579e84f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "“Eğitim yolculuğunuz burada başlıyor 🚀”",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <p>Merhaba <strong>{{$json[\"Name\"]}}</strong>,</p>\n\n    <p>Sizi <strong>AI Growth</strong>’da görmek bizi çok mutlu etti! 🎉</p>\n\n    <p>Biz, farklı yaş ve seviyelere uygun <strong>kişiselleştirilmiş online eğitimler</strong> sunan bir platformuz.</p>\n\n    <p>Alanında uzman eğitmenlerimizle, kendi programınıza uygun şekilde öğrenmenizi destekliyoruz.</p>\n\n    <p>İlk adımı attınız, şimdi birlikte devam edebiliriz! 👣</p>\n\n    <p><strong>Sormak istediğiniz her şey için biz buradayız.</strong> Size özel fırsatlarımızı paylaşmak için sabırsızlanıyoruz.</p>\n\n    <p>\n      <a href=\"https://hsbrn8n12.app.n8n.cloud/webhook/track-open?email={{ $json.Email }}&campaign={{ $json.Segment }}&kacıncı_email=1. Email\"\n         style=\"background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;\">\n         Bizimle Tanışın\n      </a>\n    </p>\n\n    <p>Sevgilerle,<br>Eğitim Ekibiniz</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        760,
+        300
+      ],
+      "id": "1e85b35b-2c73-46de-bc89-c43814d080b2",
+      "name": "Send a message3",
+      "webhookId": "6b74a328-036e-4072-b4f6-d84b0579e84f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        980,
+        -180
+      ],
+      "id": "619b5b18-12ba-4f84-a29f-0029f3915dca",
+      "name": "Wait",
+      "webhookId": "abb6010c-5578-45bb-b44c-c63a87d84b32"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "Eğitiminize Bugün Başlayın, Bizden %10 Hediye Alın 🎓",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <p>Merhaba <strong>{{ $('Switch').item.json.Name }}</strong>,</p>\n\n    <p>Deneme dersinizden sonra hâlâ karar veremediğinizi fark ettik.</p>\n\n    <p>🎁 <strong>Size özel bir fırsatımız var:</strong><br>\n    Kayıt işleminizi şimdi tamamlarsanız <strong>%10 indirim</strong> kazanabilirsiniz!</p>\n\n    <p>Bu, eğitim yolculuğunuza başlamak için harika bir zaman olabilir.</p>\n\n    <p>\n      👉 \n      <a href=\"https://hsbrn8n12.app.n8n.cloud/webhook/track-open?email={{ $('Switch').item.json.Email }}&campaign={{ $('Switch').item.json.Segment }}&kacıncı_email=2. Email\"\n         style=\"background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;\">\n         %10 İndirimle Kayıt Ol\n      </a>\n    </p>\n\n    <p><strong>⏳ Bu teklif sadece 48 saat için geçerlidir.</strong><br>\n    Kaçırmamak için hemen şimdi harekete geçin!</p>\n\n    <p>Herhangi bir sorunuz varsa yanıtlamaktan mutluluk duyarız.</p>\n\n    <p>Sevgiler,<br>\n    Eğitim Ekibiniz</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        -180
+      ],
+      "id": "263f1597-282c-4dcb-96ac-7ae99349ea0b",
+      "name": "Send a message4",
+      "webhookId": "dee94c71-715b-4568-85a6-ce43d89e11df",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        980,
+        -20
+      ],
+      "id": "a1d16d44-bcb1-44d1-a156-760037967d57",
+      "name": "Wait1",
+      "webhookId": "abb6010c-5578-45bb-b44c-c63a87d84b32"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        980,
+        140
+      ],
+      "id": "1a57dbc3-8a05-4831-b5d7-1a1812d6bbaa",
+      "name": "Wait2",
+      "webhookId": "abb6010c-5578-45bb-b44c-c63a87d84b32"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        980,
+        300
+      ],
+      "id": "3c404d5e-c252-4c87-9860-fdbbbe9b8c64",
+      "name": "Wait3",
+      "webhookId": "abb6010c-5578-45bb-b44c-c63a87d84b32"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "📆 Hadi Deneme Dersinizi Planlayalım!",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <p>Merhaba <strong>{{ $('Switch').item.json.Name }}</strong>,</p>\n\n    <p>Formunuzu aldık, ancak henüz bir deneme dersi planlamadığınızı fark ettik.</p>\n\n    <p>Size özel bir zaman dilimi ayıralım ve eğitmenlerimizle birebir tanışma fırsatını kaçırmayın.</p>\n\n    <p><strong>📌 Bu görüşme tamamen ücretsizdir ve sadece sizi daha iyi anlamak içindir.</strong></p>\n\n    <p>💬 Eğitimin nasıl işlediğini görmek, sorularınızı sormak ve ilk adımı atmak için mükemmel bir fırsat.</p>\n\n    <p>\n      📅\n      <a href=\"https://hsbrn8n12.app.n8n.cloud/webhook/track-open?email={{ $('Switch').item.json.Email }}&campaign={{ $('Switch').item.json.Segment }}&kacıncı_email=2. Email\"\n         style=\"background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;\">\n         Deneme Dersi Planla\n      </a>\n    </p>\n\n    <p>Size en uygun zamanı seçmeniz yeterli, biz gerisini hallediyoruz 🙂</p>\n\n    <p>Sevgiler,<br>\n    Eğitim Ekibiniz</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        -20
+      ],
+      "id": "53ceac3d-1d84-4a9d-ac95-1d36fd93a1c4",
+      "name": "Send a message5",
+      "webhookId": "dee94c71-715b-4568-85a6-ce43d89e11df",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "🎁 Sizi Geri Kazanmak İstiyoruz – %15 İndirim Sürprizi!",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <p>Merhaba <strong>{{ $('Switch').item.json.Name }}</strong>,</p>\n\n    <p>Deneme dersimize katıldınız ve gösterdiğiniz ilgi bizi gerçekten heyecanlandırdı!</p>\n\n    <p>Bu güçlü başlangıcı birlikte kalıcı hale getirelim istiyoruz.</p>\n\n    <p><strong>🌟 Size özel: Tüm paketlerde <span style=\"color: #d9534f;\">%15 indirim</span> fırsatı!</strong></p>\n\n    <p>Fırsat sadece bu hafta sonuna kadar geçerli — kaçırmamanızı öneririz.</p>\n\n    <p>\n      👉 <a href=\"https://hsbrn8n12.app.n8n.cloud/webhook/track-open?email={{ $('Switch').item.json.Email }}&campaign={{ $('Switch').item.json.Segment}}&kacıncı_email=2. Email\"\n            style=\"background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;\">\n            Kaydol ve İndirimi Kullan\n         </a>\n    </p>\n\n    <p>İlk adımı attınız, şimdi sıra hedeflerinize ulaşmakta! Biz buradayız 💪</p>\n\n    <p>Sevgiler,<br>\n    Eğitim Ekibiniz</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        140
+      ],
+      "id": "702592ab-c97f-4729-a1b5-29dc78789019",
+      "name": "Send a message6",
+      "webhookId": "dee94c71-715b-4568-85a6-ce43d89e11df",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "Hazırsanız biz buradayız – hemen başlayabiliriz!",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <p>Merhaba <strong>{{ $('Switch').item.json.Name }}</strong>,</p>\n\n    <p>Sizinle henüz iletişim kuramadık.</p>\n\n    <p><strong>İlk adımı atmak bazen zor olabilir, biliyoruz.</strong> Ama biz buradayız ve sizin için süreci kolaylaştırmak istiyoruz!</p>\n\n    <p>🎯 İster ücretsiz deneme dersi, ister kayıt işlemleri – ekibimiz size rehberlik etmeye hazır.</p>\n\n    <p><strong>Şimdi bizimle iletişime geçerek aklınızdaki tüm soruları yanıtlayabiliriz.</strong></p>\n\n    <p>\n      <a href=\"https://hsbrn8n12.app.n8n.cloud/webhook/track-open?email={{ $('Switch').item.json.Email }}&campaign={{ $('Get row(s) in sheet').item.json.Segment }}&kacıncı_email=2. Email\"\n         style=\"background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;\">\n         İlk Adımı At – Ekibimizle Görüş\n      </a>\n    </p>\n\n    <p>Her yolculuk bir adımla başlar – hadi birlikte başlayalım!</p>\n\n    <p>Sevgiler,<br>\n    Eğitim Ekibiniz</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        300
+      ],
+      "id": "1513159f-0459-4a0f-be0d-f47e143977dd",
+      "name": "Send a message7",
+      "webhookId": "dee94c71-715b-4568-85a6-ce43d89e11df",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1460,
+        -180
+      ],
+      "id": "dbf6ae9a-778c-4585-945c-4ff8cfdf1c34",
+      "name": "Wait4",
+      "webhookId": "abb6010c-5578-45bb-b44c-c63a87d84b32"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1460,
+        -20
+      ],
+      "id": "ea235917-2b3e-474a-8b9b-6def3e74f10e",
+      "name": "Wait5",
+      "webhookId": "abb6010c-5578-45bb-b44c-c63a87d84b32"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1460,
+        140
+      ],
+      "id": "4060e96a-8908-4363-9b66-53097681ecd1",
+      "name": "Wait6",
+      "webhookId": "abb6010c-5578-45bb-b44c-c63a87d84b32"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1460,
+        300
+      ],
+      "id": "3fc6d8db-c706-407b-86f6-78751486b181",
+      "name": "Wait7",
+      "webhookId": "abb6010c-5578-45bb-b44c-c63a87d84b32"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "Birlikte Başlamak İçin Son Şansınız Olabilir 🎯",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <p>Merhaba <strong>{{ $('Switch').item.json.Name }}</strong>,</p>\n\n    <p>Deneme dersimize katıldığınız ve bize zaman ayırdığınız için çok teşekkür ederiz 🙏</p>\n\n    <p>Görüşmemizden sonra programımıza dahil olmadığınızı fark ettik.<br>\n    Belki aklınızda hâlâ bazı sorular ya da tereddütler olabilir — sizi en iyi şekilde yönlendirmek için buradayız.</p>\n\n    <p><strong>Size en uygun paketi birlikte belirleyelim, bu süreci kolaylaştıralım.</strong></p>\n\n    <p>\n      👉 \n      <a href=\"https://hsbrn8n12.app.n8n.cloud/webhook/track-open?email={{ $('Switch').item.json.Email }}&campaign={{ $('Switch').item.json.Segment }}&kacıncı_email=3. Email\"\n         style=\"background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;\">\n         Size Uygun Planı Oluşturalım\n      </a>\n    </p>\n\n    <p>✅ Sadece birkaç tıklama ile kaydolabilir, eğitim yolculuğunuza bizimle başlayabilirsiniz.</p>\n\n    <p>İletişime geçmek isterseniz bu maile yanıt vermeniz yeterli.</p>\n\n    <p>Sevgiler,<br>\n    Eğitim Ekibiniz</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1680,
+        -180
+      ],
+      "id": "f3ee5fc4-84dc-4c92-a2e9-60c9a5788d41",
+      "name": "Send a message8",
+      "webhookId": "dee94c71-715b-4568-85a6-ce43d89e11df",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "Sizi daha iyi tanımak için hazırız – bir zaman seçmeniz yeterli!",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <p>Merhaba <strong>{{ $('Switch').item.json.Name }}</strong>,</p>\n\n    <p>Formunuzu inceledik ancak henüz bir deneme dersi planlamadığınızı gördük.</p>\n\n    <p>📣 Eğitmenlerimizle birebir tanışmak ve sistemi daha yakından keşfetmek ister misiniz?</p>\n\n    <p><strong>🎁 Şu an sınırlı kontenjanla ücretsiz deneme fırsatımız devam ediyor!</strong></p>\n\n    <p>📆 Size en uygun zamanı birlikte belirleyelim, birkaç tıklama yeterli.</p>\n\n    <p>\n      👉\n      <a href=\"https://hsbrn8n12.app.n8n.cloud/webhook/track-open?email={{ $('Switch').item.json.Email }}&campaign={{ $('Switch').item.json.Segment }}&kacıncı_email=3. Email\"\n         style=\"background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;\">\n         Deneme Dersi Planla\n      </a>\n    </p>\n\n    <p>Unutmayın, ilk adımı atmak her zaman en zorudur. Geri kalanında biz yanınızdayız 😊</p>\n\n    <p>Sevgiler,<br>Eğitim Ekibi</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1680,
+        -20
+      ],
+      "id": "b582dac0-12c2-4e20-a55c-3802be57d97e",
+      "name": "Send a message9",
+      "webhookId": "dee94c71-715b-4568-85a6-ce43d89e11df",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "Eğitim hedeflerinize birlikte ulaşabiliriz !!",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <p>Merhaba <strong>{{ $('Switch').item.json.Name }}</strong>,</p>\n\n    <p>Deneme dersinizin ardından aklınızda hâlâ bazı sorular olabilir – bu çok normal.</p>\n\n    <p>Biz, bu yolculukta sizi yalnız bırakmamak için buradayız. İster program detayları, ister eğitmenlerimiz hakkında daha fazla bilgi…</p>\n\n    <p><strong>📞 Tüm sorularınızı yanıtlamak ve size en uygun planı birlikte oluşturmak için bir görüşme planlayabiliriz.</strong></p>\n\n    <p>Bir adım atmanız yeterli, gerisini birlikte hallederiz 💬</p>\n\n    <p>\n      👉\n      <a href=\"https://hsbrn8n12.app.n8n.cloud/webhook/track-open?email={{ $('Switch').item.json.Email }}&campaign={{ $('Get row(s) in sheet').item.json.Segment }}&kacıncı_email=3. Email\"\n         style=\"background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;\">\n         Görüşme Planla\n      </a>\n    </p>\n\n    <p>Sevgiler,<br>Danışman Ekibiniz</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1680,
+        140
+      ],
+      "id": "1cc29957-3bbb-4401-b530-86b00fc61376",
+      "name": "Send a message10",
+      "webhookId": "dee94c71-715b-4568-85a6-ce43d89e11df",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch').item.json.Email }}",
+        "subject": "Bu mesajı gördüyseniz hâlâ zaman var",
+        "message": "=<html>\n  <body style=\"font-family: Arial, sans-serif; color: #333;\">\n    <p>Merhaba <strong>{{ $('Switch').item.json.Name }}</strong>,</p>\n\n    <p>Henüz sizden bir dönüş alamadık.</p>\n\n    <p><strong>Kararsız kalmış olabilirsiniz, bu çok normal.</strong> Ancak sizi daha yakından tanımak ve nasıl yardımcı olabileceğimizi paylaşmak için sabırsızlanıyoruz.</p>\n\n    <p>🎯 İster eğitim süreciyle ilgili sorularınız olsun, ister programı netleştirmek isteyin – bizimle iletişime geçmeniz yeterli.</p>\n\n    <p>\n      👉\n      <a href=\"https://hsbrn8n12.app.n8n.cloud/webhook/track-open?email={{ $('Switch').item.json.Email }}&campaign={{ $('Switch').item.json.Segment }}&kacıncı_email=3. Email\"\n         style=\"background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;\">\n         Bizimle İletişime Geçin\n      </a>\n    </p>\n\n    <p>Ayrıca, bu maile doğrudan yanıt vererek de bize ulaşabilirsiniz.</p>\n\n    <p>Sevgiler,<br>\n    Eğitim Ekibiniz</p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1680,
+        300
+      ],
+      "id": "a8b6bcf0-8bf8-4091-b2d6-84d5275a7a1a",
+      "name": "Send a message11",
+      "webhookId": "dee94c71-715b-4568-85a6-ce43d89e11df",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BTQVjvOGiE0L5Qk9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "track-open",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        -360
+      ],
+      "id": "a192abc6-7b62-4858-8b3d-0ce0247b215c",
+      "name": "Webhook",
+      "webhookId": "c435f011-e115-4f81-8ab8-89047f2c9806"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"email\": \" {{ $json.query.email }}\",\n  \"campaign\": \"{{ $json.query.campaign }}\",\n  \"kacıncı_email\": \"{{ $json.query['kacıncı_email'] }}\",\n  \"time\": {{ $now }}\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        -360
+      ],
+      "id": "9ce149fb-0712-4322-901e-9680e651981b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1S9oXpl4hd0Np76znssgzIYTFzA4PHKtAkzERoPMR-SE",
+          "mode": "list",
+          "cachedResultName": "Linke Tıklanma Log Kayıtları",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1S9oXpl4hd0Np76znssgzIYTFzA4PHKtAkzERoPMR-SE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sayfa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1S9oXpl4hd0Np76znssgzIYTFzA4PHKtAkzERoPMR-SE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "query"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "campaign",
+              "displayName": "campaign",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "kacıncı_email",
+              "displayName": "kacıncı_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        320,
+        -360
+      ],
+      "id": "9cea645b-c2fd-4b2d-adf4-bc1bb9534df3",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "izP7qp7f31YDuRmV",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send a message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message3": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message2": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "Send a message7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Send a message6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Send a message5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message4": {
+      "main": [
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message5": {
+      "main": [
+        [
+          {
+            "node": "Wait5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message6": {
+      "main": [
+        [
+          {
+            "node": "Wait6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message7": {
+      "main": [
+        [
+          {
+            "node": "Wait7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "Send a message8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait5": {
+      "main": [
+        [
+          {
+            "node": "Send a message9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait6": {
+      "main": [
+        [
+          {
+            "node": "Send a message10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait7": {
+      "main": [
+        [
+          {
+            "node": "Send a message11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d9dc8888-e888-4a4a-a2c7-75aaa6ebd2f7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f0975136b9e27ed96582e7766048a49bf45bf914fd93bb2a32b49bf4a4e21b5"
+  },
+  "id": "sDGB6QcEXOOll4QI",
+  "tags": []
+}
